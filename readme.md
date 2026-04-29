@@ -46,12 +46,7 @@ This is a real-time chat application API built with FastAPI, WebSockets, and SQL
    ```
    The API will be available at `http://127.0.0.1:8000`.
 
-## Interactive API Documentation
-FastAPI automatically generates interactive API documentation. You can access it in your browser once the server is running:
-- **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **ReDoc**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
 
----
 
 ## API Endpoints Guide
 
@@ -126,19 +121,8 @@ Connect to a real-time chat room. You must provide the JWT token as a query para
 - **Method**: `WebSocket`
 - **Usage**:
   Connect to the WebSocket using JavaScript or any WebSocket client. Once connected, any text message sent will be broadcasted to all users in the `{room_id}`.
+- **This feature is yet to be implemented**
 
-Example JavaScript connection:
-  ```javascript
-  const token = "your_jwt_token_here";
-  const roomId = "general";
-  const ws = new WebSocket(`ws://127.0.0.1:8000/ws/${roomId}?token=${token}`);
-  
-  ws.onmessage = function(event) {
-      console.log("New message:", event.data);
-  };
-  
-  ws.send("Hello everyone!");
-  ```
 
-## Testing with `test_chat.html`
-There is a `test_chat.html` file provided in the root directory. You can open it in your browser to test the WebSocket functionality easily after creating an account and getting a token.
+
+
