@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat</title>
+        <style>
+            body { font-family: sans-serif; margin: 20px; }
+            #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; margin-bottom: 10px; }
+            .msg { margin-bottom: 5px; }
+        </style>
+    </head>
+    <body>
+        <h1>WebSocket Chat Test</h1>
+        <div>
+            <label>Token:</label>
+            <input type="text" id="token" placeholder="Enter your JWT token here" style="width: 300px;">
+            <label>Room ID:</label>
+            <input type="text" id="roomId" value="general">
+            <button onclick="connect()">Connect</button>
+            <button onclick="disconnect()" id="disconnectBtn" disabled>Disconnect</button>
+        </div>
+        <br>
+        <div id="messages"></div>
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off" disabled/>
+            <button id="sendBtn" disabled>Send</button>
+        </form>
+
+        <script>
+            let ws;
+            function connect() {
+                const token = document.getElementById("token").value;
+                const roomId = document.getElementById("roomId").value;
+                if (!token) {
+                    alert("Please enter a token");
+                    return;
+                }
+                
+                ws = new WebSocket(`ws://127.0.0.1:8000/ws/${roomId}?token=${token}`);
+                
+                ws.onmessage = function(event) {
+                    const messages = document.getElementById('messages');
+                    const message = document.createElement('div');
+                    message.className = 'msg';
+                    const content = document.createTextNode(event.data);
+                    message.appendChild(content);
+                    messages.appendChild(message);
+                    messages.scrollTop = messages.scrollHeight;
+                };
+
+                ws.onopen = function(event) {
+                    document.getElementById('messageText').disabled = false;
+                    document.getElementById('sendBtn').disabled = false;
+                    document.getElementById('disconnectBtn').disabled = false;
+                };
+
+                ws.onclose = function(event) {
+                    const messages = document.getElementById('messages');
+                    const message = document.createElement('div');
+                    message.className = 'msg';
+                    message.style.color = 'red';
+                    if (event.code === 1008) {
+                        message.appendChild(document.createTextNode('Connection closed: Invalid token'));
+                    } else {
+                        message.appendChild(document.createTextNode('Connection closed'));
+                    }
+                    messages.appendChild(message);
+                    document.getElementById('messageText').disabled = true;
+                    document.getElementById('sendBtn').disabled = true;
+                    document.getElementById('disconnectBtn').disabled = true;
+                };
+            }
+
+            function disconnect() {
+                if (ws) {
+                    ws.close();
+                }
+            }
+
+            function sendMessage(event) {
+                event.preventDefault();
+                const input = document.getElementById("messageText");
+                ws.send(input.value);
+                input.value = '';
+            }
+        </script>
+    </body>
+</html>
